@@ -2,8 +2,8 @@ import asyncio
 import time
 import uuid
 
-from start.app.model.meta import orm
-from start.app.model.meta.orm import Model, StringField, BooleanField, FloatField
+from start.app.model import orm
+from start.app.model.orm import Model, StringField, BooleanField, FloatField
 
 
 def next_id():
@@ -27,6 +27,5 @@ async def test(loop):
     res = await user.save()
     print(res)
 
-
-loop = asyncio.get_event_loop()
-loop.run_until_complete(test(loop))
+# loop = asyncio.get_event_loop()
+# loop.run_until_complete(test(loop))

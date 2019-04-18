@@ -7,7 +7,7 @@ logging.basicConfig(level=logging.INFO)
 
 def log(sql):
     logging.info('SQL: %s' % sql)
-    
+
 
 # 创建连接池
 async def create_pool(loop, **kw):
