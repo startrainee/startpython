@@ -9,7 +9,8 @@ from aiohttp import web
 from jinja2 import Environment, FileSystemLoader
 
 from start.app.config.config import configs
-from start.app.handlers.webframe import add_routes, add_static
+from start.app.handlers.handlers import COOKIE_NAME, cookie2user
+from start.app.handlers.webframe import add_routes
 from start.app.model import orm
 
 logging.basicConfig(level=logging.INFO)
@@ -40,13 +41,27 @@ async def init(loop):
 async def logger_factory(app, handler):
     async def logger(request):
         logging.info('Request: %s %s' % (request.method, request.path))
-        # await asyncio.sleep(0.3)
         return await handler(request)
 
     return logger
 
 
-async def data_factory(app,handler):
+async def auth_factory(app, handler):
+    async def auth(request):
+        logging.info('check user: %s %s' % (request.method, request.path))
+        request.__user__ = None
+        cookie_str = request.cookies.get(COOKIE_NAME)
+        if cookie_str:
+            user = await cookie2user(cookie_str)
+            if user:
+                logging.info('set current user: %s' % user.email)
+                request.__user__ = user
+        return await handler(request)
+
+    return auth
+
+
+async def data_factory(app, handler):
     async def parse_data(request):
         if request.method == 'POST':
             if request.content_type.startswith('application/json'):
@@ -137,18 +152,25 @@ def datetime_filter(t):
     return u'%s年%s月%s日' % (dt.year, dt.month, dt.day)
 
 
-async def init1(loop):
-    await orm.create_pool(loop=loop, host=configs.db.host, port=configs.db.port, user=configs.db.user,
+def add_static(app):
+    path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'static')
+    print(path)
+    app.router.add_static('/static/', path)
+    logging.info('add static %s => %s' % ('/static/', path))
+
+
+async def init1(_loop):
+    await orm.create_pool(loop=_loop, host=configs.db.host, port=configs.db.port, user=configs.db.user,
                           password=configs.db.password, db=configs.db.db)
     app = web.Application(middlewares=[
-        logger_factory, response_factory
+        logger_factory, auth_factory, response_factory
     ])
     init_jinja2(app, filters=dict(datetime=datetime_filter))
     add_routes(app, "handlers.handlers")
     add_static(app)
     app_runner = web.AppRunner(app)
     await app_runner.setup()
-    srv = await loop.create_server(app_runner.server, '127.0.0.1', 9900)
+    srv = await _loop.create_server(app_runner.server, '127.0.0.1', 9900)
     print('Server started at http://127.0.0.1:9900...')
     return srv
 

@@ -1,0 +1,15 @@
+html {
+    padding: 20px;
+}
+
+.login-content{
+    margin: 10px;
+}
+#label_account,#label_password{
+    margin-top: 10px;
+}
+
+#submit_login_in{
+    margin-bottom: 10px;
+    margin-top: 10px;
+}

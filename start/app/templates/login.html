@@ -1,0 +1,73 @@
+{% extends '__base__.html' %}
+
+{% block title %}登陆{% endblock %}
+
+{% block beforehead %}
+<link rel="stylesheet" href="../static/css/login.css"/>
+<script>
+    $(function () {
+        var vmAuth = new Vue({
+            el: '.login-content',
+            data: {
+                email: '',
+                password: ''
+            },
+            methods: {
+                authenticate: function (event) {
+                    event.preventDefault();
+                     var $form = $('.login-content');
+
+                    if (!this.email.trim()) {
+                        return $form.showFormError("请输入邮箱");
+                    }
+                    if (!validateEmail(this.email.trim())) {
+                        return $form.showFormError("请输入正确格式的邮箱");
+                    }
+                    if (!this.password.trim()) {
+                        return $form.showFormError("请输入密码");
+                    }
+
+                    var  email = this.email.trim().toLowerCase(),
+                        data = {
+                            email: email,
+                            password: this.password === '' ? '' : CryptoJS.SHA1(email + ':' + this.password).toString()
+                        };
+
+                    $form.postJSON('/api/authenticate', data, function (err, result) {
+                        console.log("err: " + err);
+                        console.log("res: " + result);
+                        if (!err) {
+                            //location.assign('/');
+                            alert("登陆成功！")
+                        }
+                    });
+                }
+            }
+        });
+    });
+</script>
+
+{% endblock %}
+
+{% block content %}
+
+<h1>欢迎登陆</h1>
+
+<form class="login-content" v-on:submit="authenticate">
+    <div class="alert alert-danger hidden" role="alert"></div>
+    <label class="input-group-label" id="label_email" for="email">邮箱</label>
+    <div class="input-group">
+        <input type="email" v-model="email" class="form-control" id="email" placeholder="邮箱" aria-describedby="邮箱" autocomplete="email">
+    </div>
+
+    <label class="input-group-label" id="label_password" for="password">密码</label>
+    <div class="input-group">
+        <input type="password" v-model="password" class="form-control" id="password" placeholder="密码" aria-describedby="密码"
+               autocomplete="password">
+    </div>
+    <button type="submit" class="btn btn-primary" id="submit_login_in">
+        <span class="glyphicon glyphicon-log-in" aria-hidden="true"></span> 登陆
+    </button>
+</form>
+
+{% endblock %}

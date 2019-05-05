@@ -1,13 +1,6 @@
-import asyncio
 import time
-import uuid
 
-from start.app.model import orm
-from start.app.model.orm import Model, StringField, BooleanField, FloatField
-
-
-def next_id():
-    return '%015d%s000' % (int(time.time() * 1000), uuid.uuid4().hex)
+from start.app.model.orm import Model, StringField, BooleanField, FloatField, next_id
 
 
 class User(Model):
@@ -20,12 +13,11 @@ class User(Model):
     image = StringField(ddl='varchar(500)')
     created_at = FloatField(default=time.time)
 
-
-async def test(loop):
-    await orm.create_pool(loop=loop, user='subadmin', password='subadmin', db='test')
-    user = User(name='Test', email='test@example.com', passwd='1234567890', image='about:blank')
-    res = await user.save()
-    print(res)
+# async def test(loop):
+#    await orm.create_pool(loop=loop, user='subadmin', password='subadmin', db='test')
+#    user = User(name='Test', email='test@example.com', passwd='1234567890', image='about:blank')
+#    res = await user.save()
+#    print(res)
 
 # loop = asyncio.get_event_loop()
 # loop.run_until_complete(test(loop))

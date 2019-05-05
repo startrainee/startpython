@@ -12,6 +12,6 @@ configs = {
         'db': 'test'
     },
     'session': {
-        'secret': 'subadmin'
+        'secret': 'wangsession'
     }
 }

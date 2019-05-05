@@ -1,4 +1,6 @@
 import logging
+import time
+import uuid
 
 import aiomysql
 
@@ -7,6 +9,10 @@ logging.basicConfig(level=logging.INFO)
 
 def log(sql):
     logging.info('SQL: %s' % sql)
+
+
+def next_id():
+    return '%015d%s000' % (int(time.time() * 1000), uuid.uuid4().hex)
 
 
 # 创建连接池
@@ -207,9 +213,9 @@ class Model(dict, metaclass=ModelMetaclass):
         return [cls(**r) for r in rs]
 
     @classmethod
-    async def findNumber(cls, selectField, where=None, args=None):
+    async def findNumber(cls, selectfield, where=None, args=None):
         """ find number by select and where. """
-        sql = ['select %s _num_ from `%s`' % (selectField, cls.__table__)]
+        sql = ['select %s _num_ from `%s`' % (selectfield, cls.__table__)]
         if where:
             sql.append('where')
             sql.append(where)
@@ -232,6 +238,7 @@ class Model(dict, metaclass=ModelMetaclass):
         rows = await execute(self.__insert__, args)
         if rows != 1:
             logging.warning('failed to insert record: affected rows: %s' % rows)
+        return rows
 
     async def update(self, **kwargs):
         args = list(map(self.getValue, self.__fields__))
@@ -245,3 +252,4 @@ class Model(dict, metaclass=ModelMetaclass):
         rows = await execute(self.__delete__, args)
         if rows != 1:
             logging.warning('failed to remove by primary key: affected rows: %s' % rows)
+        return rows

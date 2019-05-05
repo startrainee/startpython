@@ -1,0 +1,22 @@
+#welcome{
+    padding-left: 40px;
+}
+
+.register-content{
+    padding-left: 40px;
+    width: 400px;
+    height: 400px;
+}
+
+.input-group-label {
+    margin-top: 10px;
+}
+
+#submit_register{
+    margin-top: 10px;
+    margin-left: 10px;
+}
+
+.alert-danger{
+    margin-top: 10px;
+}

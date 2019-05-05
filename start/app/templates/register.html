@@ -1,0 +1,100 @@
+{% extends '__base__.html' %}
+
+{% block title %}登陆{% endblock %}
+
+{% block beforehead %}
+<link rel="stylesheet" href="../static/css/register.css"/>
+
+<script>
+    function validateEmail(email) {
+        var re = /^[a-z0-9.\-_]+@[a-z0-9\-_]+(\.[a-z0-9\-_]+){1,4}$/;
+        return re.test(email.toLowerCase());
+    }
+
+    $(function () {
+        var vm = new Vue(
+            {
+                el: ".register-content",
+                data: {
+                    name: '',
+                    email: '',
+                    password: '',
+                    re_password: ''
+                },
+                methods: {
+                    submit: function (event) {
+                        event.preventDefault();
+                        var $form = $('.register-content');
+                        if (!this.name.trim()) {
+                            return $form.showFormError("请输入名字");
+                        }
+                        if (!validateEmail(this.email.trim().toLowerCase())) {
+                            return $form.showFormError("请输入正确的邮件地址");
+                        }
+                        if (this.password.length < 6) {
+                            return $form.showFormError("密码至少需要6位");
+                        }
+                        if (this.password !== this.re_password) {
+                            return $form.showFormError("两次输入的密码不一致");
+                        }
+                        var email = this.email.trim().toLowerCase();
+                        console.log(email);
+                        $form.postJSON('/api/users', {
+                            name: this.name.trim(),
+                            email: email,
+                            passwd: CryptoJS.SHA1(email + ":" + this.password).toString()
+                        }, function (err, r) {
+                            console.log("res.error: " + err);
+                            console.log("res.r: " + r);
+                            if (err) {
+                                return $form.showFormError(err);
+                            }
+                            if(1 === r)
+                                return location.assign('/');
+                        })
+                    }
+                }
+            });
+        $('.register-content').show();
+    });
+</script>
+{% endblock %}
+
+{% block content %}
+
+<h1 id="welcome">欢迎您</h1>
+
+<form class="register-content" v-on:submit="submit">
+    <div class="alert alert-danger hidden" role="alert">{{ message }}</div>
+    <label class="input-group-label" id="new-account" for="account">账户</label>
+    <div class="input-group">
+        <input v-model="name" name="name" type="text" class="form-control" id="account" placeholder="用户名" aria-describedby="用户名"
+               autocomplete="account">
+    </div>
+
+    <label class="input-group-label" id="new-email" for="new_email">邮箱</label>
+    <div class="input-group">
+        <input type="email" v-model="email" name="email" class="form-control" id="new_email" placeholder="邮箱"
+               aria-describedby="邮箱"
+               autocomplete="email">
+    </div>
+
+    <label class="input-group-label" id="new-password" for="new_password">输入密码</label>
+    <div class="input-group">
+        <input type="password" v-model="password" class="form-control" id="new_password" placeholder="密码"
+               aria-describedby="密码"
+               autocomplete="password">
+    </div>
+    <label class="input-group-label" id="re-password" for="re_password">再次输入密码</label>
+    <div class="input-group">
+        <input type="password" v-model="re_password" class="form-control" id="re_password" placeholder="再次输入密码"
+               aria-describedby="再次输入密码"
+               autocomplete="password">
+    </div>
+    <button type="submit" class="btn btn-primary" id="submit_register">
+        <span class="glyphicon glyphicon-user" aria-hidden="true"></span>注册
+    </button>
+</form>
+
+
+{% endblock %}
