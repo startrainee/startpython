@@ -356,8 +356,14 @@ function postJSON(url, data, callback) {
     _httpJSON('POST', url, data, callback);
 }
 
-// extends Vue:
 
+function gotoPage(i) {
+    var r = parseQueryString();
+    r.page = i;
+    location.assign('?' + $.param(r));
+}
+
+// extends Vue:
 if (typeof(Vue)!=='undefined') {
     Vue.filter('datetime', function (value) {
         var d = value;
@@ -367,13 +373,14 @@ if (typeof(Vue)!=='undefined') {
         return d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate() + ' ' + d.getHours() + ':' + d.getMinutes();
     });
     Vue.component('pagination', {
-        template: '<ul class="uk-pagination">' +
-            '<li v-if="! has_previous" class="uk-disabled"><span><i class="uk-icon-angle-double-left"></i></span></li>' +
-            '<li v-if="has_previous"><a v-attr="onclick:\'gotoPage(\' + (page_index-1) + \')\'" href="#0"><i class="uk-icon-angle-double-left"></i></a></li>' +
-            '<li class="uk-active"><span v-text="page_index"></span></li>' +
-            '<li v-if="! has_next" class="uk-disabled"><span><i class="uk-icon-angle-double-right"></i></span></li>' +
-            '<li v-if="has_next"><a v-attr="onclick:\'gotoPage(\' + (page_index+1) + \')\'" href="#0"><i class="uk-icon-angle-double-right"></i></a></li>' +
-            '</ul>'
+        props:{page:Object},
+        template:`<ul class="pagination">
+                  <li v-if="! page.has_previous" class="disabled"><span><i class="glyphicon glyphicon-menu-left"></i></span></li>
+                  <li v-else><a @click="gotoPage((page_index-1))" href="#0"><i class="glyphicon glyphicon-menu-left"></i></a></li>
+                  <li class="active"><span>{{page.page_index}}</span></li>
+                  <li v-if="! page.has_next" class="disabled"><span><i class="glyphicon glyphicon-menu-right"></i></span></li>
+                  <li v-else="page.has_next"><a @click="gotoPage((page_index+1))" href="#0"><i class="glyphicon glyphicon-menu-right"></i></a></li>
+                  </ul>`
     });
 }
 

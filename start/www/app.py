@@ -1,3 +1,4 @@
+#!/usr/bin/python3
 import asyncio
 import json
 import logging
@@ -8,14 +9,14 @@ from datetime import datetime
 from aiohttp import web
 from jinja2 import Environment, FileSystemLoader
 
-from start.app.config.config import configs
-from start.app.handlers.handlers import COOKIE_NAME, cookie2user
-from start.app.handlers.webframe import add_routes
-from start.app.model import orm
+from config.config import configs
+from handlers.handlers import COOKIE_NAME, cookie2user
+from handlers.webframe import add_routes
+from model import orm
 
 logging.basicConfig(level=logging.INFO)
 
-
+'''
 def index(request):
     return web.Response(body=b'<h1>Awesome</h1>', content_type='text/html')
 
@@ -36,6 +37,7 @@ async def init(loop):
     srv = await loop.create_server(app_runner.server, '127.0.0.1', 9900)
     print('Server started at http://127.0.0.1:9900...')
     return srv
+'''
 
 
 async def logger_factory(app, handler):

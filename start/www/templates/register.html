@@ -1,9 +1,9 @@
 {% extends '__base__.html' %}
 
-{% block title %}登陆{% endblock %}
+{% block title %}注册{% endblock %}
 
 {% block beforehead %}
-<link rel="stylesheet" href="../static/css/register.css"/>
+<link rel="stylesheet" href="/static/css/register.css"/>
 
 <script>
     function validateEmail(email) {
@@ -39,7 +39,7 @@
                         }
                         var email = this.email.trim().toLowerCase();
                         console.log(email);
-                        $form.postJSON('/api/users', {
+                        $form.postJSON('/api/register', {
                             name: this.name.trim(),
                             email: email,
                             passwd: CryptoJS.SHA1(email + ":" + this.password).toString()
@@ -50,7 +50,7 @@
                                 return $form.showFormError(err);
                             }
                             if(1 === r)
-                                return location.assign('/');
+                                return location.assign('/login');
                         })
                     }
                 }

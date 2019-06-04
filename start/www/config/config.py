@@ -1,4 +1,4 @@
-from start.app.config import config_default
+from config import config_default
 
 
 class Dict(dict):

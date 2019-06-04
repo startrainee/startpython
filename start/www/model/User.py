@@ -1,6 +1,6 @@
 import time
 
-from start.app.model.orm import Model, StringField, BooleanField, FloatField, next_id
+from model.orm import Model, StringField, BooleanField, FloatField, next_id
 
 
 class User(Model):

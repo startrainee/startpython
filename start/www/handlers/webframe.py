@@ -2,12 +2,11 @@ import asyncio
 import functools
 import inspect
 import logging
-import os
 from urllib import parse
 
 from aiohttp import web
 
-from start.app.handlers.apis import APIError
+from handlers.apis import APIError
 
 
 def get(path):

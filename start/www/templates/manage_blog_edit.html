@@ -1,0 +1,108 @@
+{% extends '__base__.html' %}
+
+{% block title %}编辑日志{% endblock %}
+
+{% block beforehead %}
+<link rel="stylesheet" href="/static/css/blog_edit.css"/>
+<script>
+    var
+        ID = "{{ id }}",
+        action = "{{ action }}";
+
+    function initVM(blog) {
+        var vm = new Vue({
+            el: '#blog-edit-content',
+            data: blog,
+            methods: {
+                create_blog: function (event) {
+                    event.preventDefault();
+                    var $form = $('#blog-edit-content').find('form');
+                    $form.postJSON(action, this.$data, function (err, result) {
+                        if (err) {
+                            $form.showFormError(err)
+                        } else {
+                            return location.assign("/blog/" + result.id);
+                        }
+                    });
+                }
+            }
+
+        });
+        $('#blog-edit-content').show();
+        console.log("vm: " + vm);
+    }
+
+    $(function () {
+        console.log("ID: " + ID);
+        if (ID) {
+            getJSON('/api/blogs/' + ID, function (err, blog) {
+                if (err) {
+                    return fatal(err);
+                }
+                $('#loading').hide();
+                initVM(blog);
+
+            });
+        } else {
+            $('#loading').hide();
+            console.log("not id: " + ID);
+            initVM({
+                name: "",
+                summary: "",
+                content: ""
+            });
+        }
+    });
+</script>
+
+{% endblock %}
+
+{% block content %}
+
+<div class="container-fluid">
+    <h1></h1>
+    <div id="error" class=""></div>
+
+    <div id="loading" class="text-center">
+        <span class="glyphicon glyphicon-send"> 正在加载...</span>
+    </div>
+
+    <div class="row" id="blog-edit-content">
+        <div class="col-md-2"></div>
+        <form v-on:submit="create_blog" class="form-group col-md-8">
+            <div class="alert alert-danger hidden">错误</div>
+            <div class="form-group">
+                <label class="form-name-label">标题:</label>
+                <div>
+                    <input v-model="name" name="name" type="text" placeholder="标题" class="form-control">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="form-summary-label">摘要:</label>
+                <div>
+                <textarea v-model="summary" rows="4" name="summary" placeholder="摘要" class="form-control"
+                          style="resize:none;"></textarea>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="form-label">内容:</label>
+                <div>
+                <textarea v-model="content" rows="16" name="content" placeholder="内容" class="form-control"
+                          style="resize:none;"></textarea>
+                </div>
+            </div>
+            <div class="form-inline">
+                <button type="submit" class="btn btn-primary" style="margin-left: 10px">
+                    <span class="glyphicon glyphicon-save"></span>保存
+                </button>
+                <a href="/manage/blogs" class="btn btn-default" style="margin-left: 10px">
+                    <span class="glyphicon glyphicon-off"></span>取消
+                </a>
+            </div>
+        </form>
+        <div class="col-md-2"></div>
+    </div>
+</div>
+
+
+{% endblock %}
